@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- displays site properly based on user's device -->
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+
+    <title>Frontend Mentor | Browser extensions manager UI</title>
+  </head>
+  <body class="">
+    <main class="container">
+      <section class="search-container">
+        <img src="assets/images/logo.svg" alt="Logo" />
+        <input type="text" name="search-input" id="search-input" />
+        <button id="switch-theme-button">
+          <img
+            id="switch-theme-img"
+            data-theme="dark"
+            src=""
+            alt="Dark and
+          Light Mode Button"
+          />
+        </button>
+      </section>
+
+      <section class="filter-container">
+        <h1>Extensions List</h1>
+        <div class="filter-btn-container">
+          <button data-filter="all" id="filter-all-button">All</button>
+          <button data-filter="active" id="filter-active-button">Active</button>
+          <button data-filter="inactive" id="filter-inactive-button">
+            Inactive
+          </button>
+        </div>
+      </section>
+
+      <section id="extention-container"></section>
+    </main>
+    <footer>
+      <div class="attribution">
+        Challenge by
+        <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a
+        >. Coded by <a href="#">Edgardo Balan Jr</a>.
+      </div>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>
