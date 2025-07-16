@@ -1,3 +1,6 @@
+let allExtensions = [];
+let currentFilter = "all";
+
 document.addEventListener("DOMContentLoaded", () => {
   const switchImg = document.getElementById("switch-theme-img");
   const savedTheme = localStorage.getItem("currentTheme");
@@ -9,22 +12,25 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleThemeClassList(false);
     switchImg.src = "assets/images/icon-sun.svg";
   }
-  displayExtension();
+  parseJSON();
 });
 
 document.getElementById("filter-all-button").addEventListener("click", () => {
-  displayExtension();
+  currentFilter = "all";
+  displayExtension("all");
 });
 
 document
   .getElementById("filter-active-button")
   .addEventListener("click", () => {
+    currentFilter = "active";
     displayExtension("active");
   });
 
 document
   .getElementById("filter-inactive-button")
   .addEventListener("click", () => {
+    currentFilter = "inactive";
     displayExtension("inactive");
   });
 
@@ -54,6 +60,7 @@ function changeToDarkMode() {
 }
 
 function toggleThemeClassList(lightMode = false) {
+  document.getElementById("logo-text").classList.toggle("logo-text", lightMode);
   document
     .getElementById("search-input")
     .classList.toggle("search-input-light", lightMode);
@@ -82,7 +89,7 @@ function toggleThemeClassList(lightMode = false) {
     .forEach((a) => a.classList.toggle("footer-a", lightMode));
 }
 
-function displayExtension(filterType = "all") {
+function parseJSON() {
   fetch("./data.json")
     .then((response) => {
       if (!response.ok) {
@@ -91,31 +98,36 @@ function displayExtension(filterType = "all") {
       return response.json();
     })
     .then((data) => {
-      const extensionContainer = document.getElementById("extention-container");
-      extensionContainer.innerHTML = ""; // remove current content
-      let currentTheme = localStorage.getItem("currentTheme");
+      allExtensions = data;
+      displayExtension();
+    })
+    .catch((error) => console.error("Failed to fetch data:", error));
+}
 
-      //filter
-      let result = filterData(filterType, data);
+function displayExtension() {
+  const extensionContainer = document.getElementById("extention-container");
+  extensionContainer.innerHTML = ""; // remove current content
+  let currentTheme = localStorage.getItem("currentTheme");
 
-      for (let x of result) {
-        let isActive = x.isActive ? "checked" : "";
-        let containerTheme =
-          currentTheme === "light"
-            ? " extension-card extension-card-light "
-            : "extension-card";
+  //filter
+  let result = filterData(currentFilter, allExtensions);
 
-        let titleTheme =
-          currentTheme === "light"
-            ? "card-title card-title-light"
-            : "card-title";
+  for (let x of result) {
+    let isActive = x.isActive ? "checked" : "";
+    let containerTheme =
+      currentTheme === "light"
+        ? " extension-card extension-card-light "
+        : "extension-card";
 
-        let descriptionTheme =
-          currentTheme === "light" ? "card-desc card-desc-light" : "card-desc";
+    let titleTheme =
+      currentTheme === "light" ? "card-title card-title-light" : "card-title";
 
-        let buttonTheme = currentTheme === "light" ? "button-light-mode" : "";
+    let descriptionTheme =
+      currentTheme === "light" ? "card-desc card-desc-light" : "card-desc";
 
-        extensionContainer.innerHTML += `<div class="${containerTheme}">
+    let buttonTheme = currentTheme === "light" ? "button-light-mode" : "";
+
+    extensionContainer.innerHTML += `<div class="${containerTheme}">
               <div class="icon-title-container">
                   <img src="${x.logo}" alt="icon" />
                   <div class="title-description-container">
@@ -126,26 +138,42 @@ function displayExtension(filterType = "all") {
                   </div>
               </div>
               <div class="btn-container">
-                  <button class="${buttonTheme}">Remove</button>
+                  <button class="${buttonTheme}"  data-name="${x.name}">Remove</button>
                   <label class="switch">
                       <input type="checkbox" data-state="${x.isActive}" ${isActive}/>
                       <span class="slider round"></span>
                   </label>
               </div>
           </div>`;
-      }
-    })
-    .catch((error) => console.error("Failed to fetch data:", error));
+  }
+  addRemoveHandlers();
 }
 
 function filterData(filterType, data) {
-  let filteredData = data;
-
-  if (filterType == "active") {
-    filteredData = data.filter((data) => data.isActive == true);
-  } else if (filterType == "inactive") {
-    filteredData = data.filter((data) => data.isActive == false);
+  if (filterType === "active") {
+    return data.filter((item) => item.isActive);
+  } else if (filterType === "inactive") {
+    return data.filter((item) => !item.isActive);
   }
+  return data;
+}
 
-  return filteredData;
+function addRemoveHandlers() {
+  document.querySelectorAll(".btn-container button").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const card = e.target.closest(".extension-card, .extension-card-light");
+      const nameToRemove = e.target.dataset.name;
+
+      if (card) {
+        card.classList.add("card-removing");
+
+        setTimeout(() => {
+          allExtensions = allExtensions.filter(
+            (ext) => ext.name !== nameToRemove
+          );
+          displayExtension();
+        }, 500);
+      }
+    });
+  });
 }

@@ -101,8 +101,16 @@ button:active {
   box-shadow: 0px 0px 2px 0px #001aff3f;
 }
 
-.search-container img {
+.logo {
   height: 30px;
+}
+
+.logo-text {
+  fill: var(--neutral-900);
+}
+
+.logo-text-light {
+  fill: var(--neutral-0);
 }
 
 .search-container input {
@@ -223,6 +231,20 @@ button:active {
 .extension-card-light {
   background-color: var(--neutral-0);
   border: 1px solid var(--neutral-600);
+}
+
+.card-removing {
+  animation: card-removing 0.5s linear 1;
+}
+
+@keyframes card-removing {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.5);
+    opacity: 0;
+  }
 }
 
 .icon-title-container {
